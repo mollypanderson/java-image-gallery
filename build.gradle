@@ -25,6 +25,7 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
 }
 
 application {
