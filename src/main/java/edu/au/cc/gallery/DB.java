@@ -51,20 +51,43 @@ public class DB {
         connection.close();
     }
 
-    public static void demo() throws Exception {
+//    public static void demo() throws Exception {
+//        DB db = new DB();
+//        db.connect();
+//        db.execute("update users set password=? where username=?",
+//                new String[] {"monkey", "fred"});
+//        ResultSet rs = db.execute("select username,password,full_name from users");
+//        while(rs.next()) {
+//            System.out.println("user: "+rs.getString(1)+","
+//                    +rs.getString(2)+","
+//                    +rs.getString(3));
+//        }
+//        rs.close();
+//        db.close();
+//    }
+
+    public static String listUsers() throws Exception {
+        StringBuilder sb = new StringBuilder("\n");
+
         DB db = new DB();
         db.connect();
-        db.execute("update users set password=? where username=?",
-                new String[] {"monkey", "fred"});
+        //db.execute("update users set password=? where username=?",
+         //       new String[] {"monkey", "fred"});
         ResultSet rs = db.execute("select username,password,full_name from users");
+        sb.append("username\tpassword\tfull name\n");
+        sb.append("-----------------------------------------\n");
         while(rs.next()) {
-            System.out.println("user: "+rs.getString(1)+","
-                    +rs.getString(2)+","
-                    +rs.getString(3));
+            sb.append(rs.getString(1)+"\t\t"
+                    +rs.getString(2)+"\t\t"
+                    +rs.getString(3)+"\n");
         }
         rs.close();
         db.close();
+
+
+        return sb.toString();
     }
 
 }
+
 
