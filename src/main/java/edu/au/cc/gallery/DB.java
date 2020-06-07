@@ -1,5 +1,7 @@
 package edu.au.cc.gallery;
 
+import org.postgresql.util.PSQLException;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,8 +17,62 @@ public class DB {
     private static final String dbUrl = "jdbc:postgresql://demo-database-2.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
     private Connection connection;
 
+    public static String listUsers() throws Exception {
+        StringBuilder sb = new StringBuilder("\n");
+
+        DB db = new DB();
+        db.connect();
+        //db.execute("update users set password=? where username=?",
+        //       new String[] {"monkey", "fred"});
+        ResultSet rs = db.execute("select username,password,full_name from users");
+        sb.append("username\tpassword\tfull name\n");
+        sb.append("-----------------------------------------\n");
+        while (rs.next()) {
+
+            sb.append(rs.getString(1) + "\t\t"
+                    + rs.getString(2) + "\t\t"
+                    + rs.getString(3) + "\n");
+
+        }
+        rs.close();
+        db.close();
+
+
+        return sb.toString();
+    }
+
+    public static void addUser(String username, String password, String fullName) throws Exception {
+
+        DB db = new DB();
+        db.connect();
+
+        try {
+            db.execute("INSERT INTO users VALUES (?,?,?)",
+                    new String[]{username, password, fullName});
+        } catch (PSQLException e) {
+            System.out.println("Error: user with username " + username + " already exists");
+        }
+
+        db.close();
+
+    }
+
+    public static void deleteUser(String username) throws Exception {
+        DB db = new DB();
+        db.connect();
+
+        try {
+            db.execute("DELETE FROM users WHERE username = ?",
+                    new String[]{username});
+        } catch (PSQLException e) {
+            System.out.println("Error: user with username " + username + " does not exist");
+        }
+
+        db.close();
+    }
+
     private String getPassword() throws FileNotFoundException {
-        try(BufferedReader br = new BufferedReader(new FileReader("/home/ec2-user/.sql-passwd"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("/home/ec2-user/.sql-passwd"))) {
             String result = br.readLine();
             return result;
         } catch (IOException e) {
@@ -28,7 +84,6 @@ public class DB {
 
     public void connect() throws FileNotFoundException, SQLException {
 
-        //Class.forName("org.postgresql.Driver");
         connection = DriverManager.getConnection(dbUrl, "image_gallery", getPassword());
 
     }
@@ -42,13 +97,9 @@ public class DB {
     public void execute(String query, String[] values) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
         for (int i = 0; i < values.length; i++) {
-            stmt.setString(i+1, values[i]);
+            stmt.setString(i + 1, values[i]);
         }
         stmt.execute();
-    }
-
-    public void close() throws SQLException {
-        connection.close();
     }
 
 //    public static void demo() throws Exception {
@@ -66,26 +117,8 @@ public class DB {
 //        db.close();
 //    }
 
-    public static String listUsers() throws Exception {
-        StringBuilder sb = new StringBuilder("\n");
-
-        DB db = new DB();
-        db.connect();
-        //db.execute("update users set password=? where username=?",
-         //       new String[] {"monkey", "fred"});
-        ResultSet rs = db.execute("select username,password,full_name from users");
-        sb.append("username\tpassword\tfull name\n");
-        sb.append("-----------------------------------------\n");
-        while(rs.next()) {
-            sb.append(rs.getString(1)+"\t\t"
-                    +rs.getString(2)+"\t\t"
-                    +rs.getString(3)+"\n");
-        }
-        rs.close();
-        db.close();
-
-
-        return sb.toString();
+    public void close() throws SQLException {
+        connection.close();
     }
 
 }
