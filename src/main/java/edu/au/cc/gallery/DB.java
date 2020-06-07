@@ -57,6 +57,50 @@ public class DB {
 
     }
 
+    public static void updateUser(String username, String password, String fullName) throws Exception {
+
+        DB db = new DB();
+        db.connect();
+
+        try {
+            if (password != null && !password.isEmpty()) {
+
+                db.execute("update users set password=? where username=?",
+                        new String[]{password, username});
+            }
+            if (fullName != null && !password.isEmpty()) {
+                db.execute("update users set full_name=? where username=?",
+                        new String[]{fullName, username});
+            }
+
+        } catch (Exception e) {
+            System.out.println("Something went wrong. ");
+        }
+
+        db.close();
+
+    }
+
+    public static boolean doesUserExist(String username) throws Exception {
+
+        DB db = new DB();
+        db.connect();
+
+        ResultSet rs = db.executeWithValues("select username,password,full_name from users where username = ?",
+                new String[] {username});
+
+        if (!rs.next()) {
+            rs.close();
+            db.close();
+            return false;
+        } else {
+            rs.close();
+            db.close();
+            return true;
+        }
+
+    }
+
     public static void deleteUser(String username) throws Exception {
         DB db = new DB();
         db.connect();
@@ -90,6 +134,15 @@ public class DB {
 
     public ResultSet execute(String query) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        return rs;
+    }
+
+    public ResultSet executeWithValues(String query, String[] values) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement(query);
+        for (int i = 0; i < values.length; i++) {
+            stmt.setString(i + 1, values[i]);
+        }
         ResultSet rs = stmt.executeQuery();
         return rs;
     }

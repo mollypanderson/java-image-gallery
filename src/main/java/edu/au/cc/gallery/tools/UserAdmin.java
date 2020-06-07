@@ -16,7 +16,7 @@ public class UserAdmin {
 
         while (!selection.equals("5")) {
 
-            System.out.print("Enter command: ");
+            System.out.print("Enter command> ");
 
             selection = scanner.nextLine();
 
@@ -35,7 +35,21 @@ public class UserAdmin {
                 DB.addUser(username, password, fullName);
 
             } else if (selection.equals("3")) {
+                System.out.print("Username to edit> ");
+                String username = scanner.nextLine();
 
+                boolean userExists = DB.doesUserExist(username);
+
+                if (!userExists) {
+                    System.out.println("No such user. ");
+                } else {
+                    System.out.print("New password (press enter to keep current)> ");
+                    String password = scanner.nextLine();
+                    System.out.print("New full name> ");
+                    String fullName = scanner.nextLine();
+
+                    DB.updateUser(username, password, fullName);
+                }
 
             } else if (selection.equals("4")) {
                 System.out.print("Enter username to delete> ");
@@ -47,9 +61,9 @@ public class UserAdmin {
                     DB.deleteUser(username);
                     System.out.println("Deleted. ");
                 }
-                
+
             } else if (selection.equals("5")) {
-                System.out.println("Goodbye! ");
+                System.out.println("Bye. ");
 
             } else {
                 System.out.println("Invalid selection. ");
