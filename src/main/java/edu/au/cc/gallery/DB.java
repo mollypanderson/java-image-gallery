@@ -22,8 +22,6 @@ public class DB {
 
         DB db = new DB();
         db.connect();
-        //db.execute("update users set password=? where username=?",
-        //       new String[] {"monkey", "fred"});
         ResultSet rs = db.execute("select username,password,full_name from users");
         sb.append("username\tpassword\tfull name\n");
         sb.append("-----------------------------------------\n");
@@ -68,7 +66,7 @@ public class DB {
                 db.execute("update users set password=? where username=?",
                         new String[]{password, username});
             }
-            if (fullName != null && !password.isEmpty()) {
+            if (fullName != null && !fullName.isEmpty()) {
                 db.execute("update users set full_name=? where username=?",
                         new String[]{fullName, username});
             }
@@ -155,20 +153,20 @@ public class DB {
         stmt.execute();
     }
 
-//    public static void demo() throws Exception {
-//        DB db = new DB();
-//        db.connect();
-//        db.execute("update users set password=? where username=?",
-//                new String[] {"monkey", "fred"});
-//        ResultSet rs = db.execute("select username,password,full_name from users");
-//        while(rs.next()) {
-//            System.out.println("user: "+rs.getString(1)+","
-//                    +rs.getString(2)+","
-//                    +rs.getString(3));
-//        }
-//        rs.close();
-//        db.close();
-//    }
+    public static void demo() throws Exception {
+        DB db = new DB();
+        db.connect();
+        db.execute("update users set password=? where username=?",
+                new String[] {"monkey", "fred"});
+        ResultSet rs = db.execute("select username,password,full_name from users");
+        while(rs.next()) {
+            System.out.println("user: "+rs.getString(1)+","
+                    +rs.getString(2)+","
+                    +rs.getString(3));
+        }
+        rs.close();
+        db.close();
+    }
 
     public void close() throws SQLException {
         connection.close();
