@@ -13,8 +13,11 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class DB {
-    private static final String dbUrl = "jdbc:postgresql://demo-database-2.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
+    private static final String dbUrl = "jdbc:postgresql://image-gallery.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
     private Connection connection;
 
     public static String listUsers() throws Exception {
@@ -113,20 +116,24 @@ public class DB {
         db.close();
     }
 
-    private String getPassword() throws FileNotFoundException {
-        try (BufferedReader br = new BufferedReader(new FileReader("/home/ec2-user/.sql-passwd"))) {
-            String result = br.readLine();
-            return result;
-        } catch (IOException e) {
-            System.out.println("Error opening pwd file");
-            System.exit(1);
-        }
-        return null;
+    private JSONObject getSecret() {
+        String s = Secrets.getSecretImageGallery();
+        return new JSONObject(s);
     }
 
-    public void connect() throws FileNotFoundException, SQLException {
+    private String getPassword(JSONObject secret) {
+        return secret.getString("password");
+    }
 
-        connection = DriverManager.getConnection(dbUrl, "image_gallery", getPassword());
+    public void connect() throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+            JSONObject secret = getSecret();
+            connection = DriverManager.getConnection(dbUrl, "image_gallery", getPassword(secret));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
@@ -173,5 +180,6 @@ public class DB {
     }
 
 }
+
 
 

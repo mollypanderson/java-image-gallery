@@ -23,6 +23,8 @@ repositories {
 dependencies {
     implementation platform('software.amazon.awssdk:bom:2.13.20')
     implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:secretsmanager'
+    implementation group: 'org.json', name: 'json', version: '20200518'
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
@@ -36,3 +38,4 @@ application {
     // Define the main class for the application.
     mainClassName = 'edu.au.cc.gallery.App'
 }
+
