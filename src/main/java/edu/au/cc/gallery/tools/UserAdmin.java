@@ -21,7 +21,7 @@ public class UserAdmin {
             selection = scanner.nextLine();
 
             if (selection.equals("1")) {
-                String result = DB.listUsers();
+                String result = DB.listUsers().toString();
                 System.out.println(result);
 
             } else if (selection.equals("2")) {

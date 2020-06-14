@@ -25,6 +25,12 @@ dependencies {
     implementation 'software.amazon.awssdk:s3'
     implementation 'software.amazon.awssdk:secretsmanager'
     implementation group: 'org.json', name: 'json', version: '20200518'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
+
+    compile "com.sparkjava:spark-core:2.8.0"
+    
+    implementation group: 'com.sparkjava', name: 'spark-template-handlebars', version: '2.7.1'
+    
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
@@ -38,4 +44,5 @@ application {
     // Define the main class for the application.
     mainClassName = 'edu.au.cc.gallery.App'
 }
+
 

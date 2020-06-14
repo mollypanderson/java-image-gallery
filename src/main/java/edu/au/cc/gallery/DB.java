@@ -2,44 +2,57 @@ package edu.au.cc.gallery;
 
 import org.postgresql.util.PSQLException;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.ArrayList;
 
 public class DB {
     private static final String dbUrl = "jdbc:postgresql://image-gallery.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
     private Connection connection;
 
-    public static String listUsers() throws Exception {
-        StringBuilder sb = new StringBuilder("\n");
+    public static ArrayList listUsers() throws Exception {
 
         DB db = new DB();
         db.connect();
         ResultSet rs = db.execute("select username,password,full_name from users");
-        sb.append("username\tpassword\tfull name\n");
-        sb.append("-----------------------------------------\n");
+
+        ArrayList<String> users = new ArrayList<>();
+
         while (rs.next()) {
 
-            sb.append(rs.getString(1) + "\t\t"
-                    + rs.getString(2) + "\t\t"
-                    + rs.getString(3) + "\n");
+            users.add(rs.getString(1));
 
         }
         rs.close();
         db.close();
 
 
-        return sb.toString();
+        return users;
+    }
+
+    public static String getUser(String username) throws Exception {
+
+        DB db = new DB();
+        db.connect();
+        String user = "";
+
+        ResultSet rs = db.executeWithValues("select username from users where username = ?",
+                new String[] {username});
+
+        while (rs.next()) {
+
+            user = rs.getString(1);
+
+        }
+        rs.close();
+        db.close();
+
+        return user;
     }
 
     public static void addUser(String username, String password, String fullName) throws Exception {
@@ -180,6 +193,5 @@ public class DB {
     }
 
 }
-
 
 
