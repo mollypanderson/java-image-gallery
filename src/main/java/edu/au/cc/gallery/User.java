@@ -61,17 +61,17 @@ public class User {
 
     public String addUser(Request req, Response res) throws Exception {
         DB.addUser(req.queryParams("userId"), req.queryParams("password"), req.queryParams("fullName"));
-        return "Added user " + req.queryParams("userId");
+        return "Added user " + req.queryParams("userId") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
     }
 
     public String modifyUser(Request req, Response res) throws Exception {
         DB.updateUser(req.params(":user"), req.queryParams("password"), req.queryParams("fullName"));
-        return "Modified user " + req.params(":user");
+        return "Modified user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
     }
 
     public String deleteUser(Request req, Response res) throws Exception {
         DB.deleteUser(req.params(":user"));
-        return "Deleted user " + req.params(":user");
+        return "Deleted user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
     }
 
     public void addRoutes() {
@@ -86,4 +86,5 @@ public class User {
 
 
 }
+
 
