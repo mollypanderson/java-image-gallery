@@ -15,8 +15,14 @@ public class User {
 
     public String userAdminPage(Request req, Response res) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        ArrayList usersList = getAllUsers();
+        ArrayList<String> usersList = getAllUsers();
+
+        ArrayList<String> userFullNamesList = getAllUserFullNames();
+
         model.put("users", usersList);
+        model.put("userFullNames", userFullNamesList);
+
+
         return new HandlebarsTemplateEngine()
                 .render(new ModelAndView(model, "admin.hbs"));
     }
@@ -48,8 +54,8 @@ public class User {
         return users;
     }
 
-    public String getUserFullName(String userId) throws Exception {
-        return DB.getUser(userId);
+    public ArrayList<String> getAllUserFullNames() throws Exception {
+        return DB.getUserFullNames();
 
     }
 

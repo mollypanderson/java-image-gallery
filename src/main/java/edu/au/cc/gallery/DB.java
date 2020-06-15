@@ -31,28 +31,26 @@ public class DB {
         rs.close();
         db.close();
 
-
         return users;
     }
 
-    public static String getUser(String username) throws Exception {
+    public static ArrayList getUserFullNames() throws Exception {
 
         DB db = new DB();
         db.connect();
-        String user = "";
+        ResultSet rs = db.execute("select full_name from users");
 
-        ResultSet rs = db.executeWithValues("select username from users where username = ?",
-                new String[] {username});
+        ArrayList<String> users = new ArrayList<>();
 
         while (rs.next()) {
 
-            user = rs.getString(1);
+            users.add(rs.getString(1));
 
         }
         rs.close();
         db.close();
 
-        return user;
+        return users;
     }
 
     public static void addUser(String username, String password, String fullName) throws Exception {
@@ -193,5 +191,8 @@ public class DB {
     }
 
 }
+
+
+
 
 

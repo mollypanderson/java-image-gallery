@@ -4,21 +4,17 @@
     <title>User Admin Page</title>
     <meta charset="utf-8"/>
 </head>
-<body>
-<h1>Welcome to the user administration page</h1>
+<body style="font-size:20px; font-family:Consolas">
+<h2>Welcome to the user administration page</h2>
 <h3>Users</h3>
 <ul class="users-list">
     {{#each users}}
     <li>
-        <form action="/admin/modifyUser/modify" method="POST">
-            <a href="/admin/modifyUser/{{this}}">{{this}}</a>
-        </form>
-        <form action="/admin/deleteUser/delete" method="POST">
-            <a href="/admin/deleteUser/{{this}}">Delete</a>
-        </form>
+        <a href="/admin/modifyUser/{{this}}">{{this}}</a>
+        <a href="/admin/deleteUser/{{this}}"><button>Delete</button></a>
     </li>
     {{/each}}
 </ul>
-    <ul><a href="/admin/addUser">Create a new user</a></ul></br>
+    <ul><a href="/admin/addUser"><button>+ create a new user</button></a></ul></br>
 </body>
 </html>
