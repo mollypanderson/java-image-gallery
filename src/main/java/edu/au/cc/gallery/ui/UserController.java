@@ -1,4 +1,4 @@
-package edu.au.cc.gallery;
+package edu.au.cc.gallery.ui;
 
 import edu.au.cc.gallery.data.DB;
 import edu.au.cc.gallery.data.Postgres;
@@ -23,7 +23,6 @@ public class UserController {
 
     public String userAdminPage(Request req, Response res) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        //List<User> usersList = getAllUsers();
 
         model.put("users", getUserDAO().getUsers());
 
@@ -51,34 +50,45 @@ public class UserController {
                 .render(new ModelAndView(model, "deleteUser.hbs"));
     }
 
-    public List<User> getAllUsers() {
-
+    public String addUser(Request req, Response res) {
         try {
             UserDAO dao = Postgres.getUserDAO();
-            return dao.getUsers();
+            dao.addUser(new User(req.queryParams("userId"), req.queryParams("password"), req.queryParams("fullName")));
+            return "Added user " + req.queryParams("userId") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+
         } catch (Exception ex) {
-            return null;
+            return "Error: " + ex.getMessage();
         }
-    }
-
-    public ArrayList<String> getAllUserFullNames() throws Exception {
-        return DB.getUserFullNames();
 
     }
 
-    public String addUser(Request req, Response res) throws Exception {
-        DB.addUser(req.queryParams("userId"), req.queryParams("password"), req.queryParams("fullName"));
-        return "Added user " + req.queryParams("userId") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
-    }
+    public String modifyUser(Request req, Response res) {
+        try {
 
-    public String modifyUser(Request req, Response res) throws Exception {
-        DB.updateUser(req.params(":user"), req.queryParams("password"), req.queryParams("fullName"));
-        return "Modified user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+            UserDAO dao = Postgres.getUserDAO();
+            User u = dao.getUserByUsername(req.params(":user"));
+            u.setPassword(req.queryParams("password"));
+            u.setFullName(req.queryParams("fullName"));
+
+            dao.updateUser(u);
+            return "Modified user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+
+        } catch (Exception ex) {
+            return "Error: " + ex.getMessage();
+        }
+
     }
 
     public String deleteUser(Request req, Response res) throws Exception {
-        DB.deleteUser(req.params(":user"));
-        return "Deleted user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+        try {
+            UserDAO dao = Postgres.getUserDAO();
+            dao.deleteUser(req.params(":user"));
+            return "Deleted user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+
+        } catch (Exception ex) {
+            return "Error: " + ex.getMessage();
+        }
+
     }
 
     private String login(Request req, Response resp) {
@@ -117,7 +127,7 @@ public class UserController {
     }
 
     private void checkAuthentication(Request req, Response resp) {
-        
+
         if (!authenticated) {
             resp.redirect("/login");
             halt(401, "You must be logged in to view this page");
@@ -154,6 +164,9 @@ public class UserController {
         post("/login", (req, res) -> loginPost(req, res));
         get("/", (req, res) -> home(req, res));
         before("/", (req, res) -> checkAuthentication(req, res));
+        before("/admin", (req, res) -> checkAuthentication(req, res));
+        before("/uploadImage", (req, res) -> checkAuthentication(req, res));
+        before("/viewImages", (req, res) -> checkAuthentication(req, res));
         before("/admin/*", (req, res) -> checkAdmin(req, res));
         get("/uploadImage", (req, res) -> uploadImage(req, res));
         get("/viewImages", (req, res) -> viewImages(req, res));
