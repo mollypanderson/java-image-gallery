@@ -7,13 +7,28 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class DB {
+   
     private static final String dbUrl = "jdbc:postgresql://image-gallery.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
+    private static final String dbUser = System.getenv("IG_USER");
+    private static final String dbPassword = System.getenv("IG_PASSWD");
     private Connection connection;
+
+   // public static void setEnvVars() {
+  //      StringBuilder sb = new StringBuilder("jdbc:postgresql://");
+//	sb.append(System.getenv("PG_HOST"));
+//	sb.append("/");
+//	sb.append(System.getenv("IG_DATABASE"));
+//	dbUrl = sb.toString();
+   // }
 
     public static ArrayList listUsers() throws Exception {
 
@@ -127,25 +142,12 @@ public class DB {
         db.close();
     }
 
-    private JSONObject getSecret() {
-        String s = Secrets.getSecretImageGallery();
-        return new JSONObject(s);
+    private String getPassword() {
+	return dbPassword;
     }
 
-    private String getPassword(JSONObject secret) {
-        return secret.getString("password");
-    }
-
-    public void connect() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-            JSONObject secret = getSecret();
-            connection = DriverManager.getConnection(dbUrl, "image_gallery", getPassword(secret));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
+    public void connect() throws FileNotFoundException, SQLException {
+            connection = DriverManager.getConnection(dbUrl, "image_gallery", getPassword());
     }
 
     public ResultSet execute(String query) throws SQLException {
@@ -191,5 +193,6 @@ public class DB {
     }
 
 }
+
 
 
