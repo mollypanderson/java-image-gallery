@@ -94,12 +94,29 @@ public class UserController {
                 return "Invalid user or password";
             }
             req.session().attribute("user", username);
-            resp.redirect("/admin");
+            resp.redirect("/");
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
         return "";
 
+    }
+
+    private boolean isAdmin(String username) {
+        return username != null && username.equals("administrator");
+    }
+
+    private void checkAdmin(Request req, Response resp) {
+        if (!isAdmin(req.session().attribute("user"))) {
+            resp.redirect("/login");
+            halt();
+        }
+    }
+
+    private String home(Request req, Response resp) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        return new HandlebarsTemplateEngine()
+                .render(new ModelAndView(model, "home.hbs"));
     }
 
     public void addRoutes() {
@@ -112,6 +129,8 @@ public class UserController {
         post("/admin/deleteUser/:user/delete", (req, res) -> deleteUser(req, res));
         get("/login", (req, res) -> login(req, res));
         post("/login", (req, res) -> loginPost(req, res));
+        get("/", (req, res) -> home(req, res));
+        before("/admin/*", (req, res) -> checkAdmin(req, res));
     }
 
 
