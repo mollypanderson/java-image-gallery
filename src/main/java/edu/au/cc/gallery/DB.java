@@ -17,18 +17,19 @@ import java.util.ArrayList;
 
 public class DB {
    
-    private static final String dbUrl = "jdbc:postgresql://image-gallery.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
+    private static final String dbUrl = buildDbUrl();
     private static final String dbUser = System.getenv("IG_USER");
     private static final String dbPassword = System.getenv("IG_PASSWD");
     private Connection connection;
 
-   // public static void setEnvVars() {
-  //      StringBuilder sb = new StringBuilder("jdbc:postgresql://");
-//	sb.append(System.getenv("PG_HOST"));
-//	sb.append("/");
-//	sb.append(System.getenv("IG_DATABASE"));
-//	dbUrl = sb.toString();
-   // }
+    public static String buildDbUrl() {
+        StringBuilder sb = new StringBuilder("jdbc:postgresql://");
+	sb.append(System.getenv("PG_HOST"));
+	sb.append("/");
+	sb.append(System.getenv("IG_DATABASE"));
+	String result = sb.toString();
+	return result;
+    }
 
     public static ArrayList listUsers() throws Exception {
 
@@ -147,7 +148,7 @@ public class DB {
     }
 
     public void connect() throws FileNotFoundException, SQLException {
-            connection = DriverManager.getConnection(dbUrl, "image_gallery", getPassword());
+            connection = DriverManager.getConnection(dbUrl, dbUser, getPassword());
     }
 
     public ResultSet execute(String query) throws SQLException {
