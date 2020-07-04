@@ -1,4 +1,4 @@
-package edu.au.cc.gallery;
+package edu.au.cc.gallery.data;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;

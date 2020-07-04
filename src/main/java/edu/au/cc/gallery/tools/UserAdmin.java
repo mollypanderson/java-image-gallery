@@ -1,6 +1,6 @@
 package edu.au.cc.gallery.tools;
 
-import edu.au.cc.gallery.DB;
+import edu.au.cc.gallery.data.DB;
 
 import java.util.Scanner;
 
@@ -72,4 +72,5 @@ public class UserAdmin {
 
     }
 }
+
 

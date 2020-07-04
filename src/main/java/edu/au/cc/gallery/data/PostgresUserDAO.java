@@ -1,4 +1,4 @@
-package edu.au.cc.gallery;
+package edu.au.cc.gallery.data;
 
 import java.io.FileNotFoundException;
 import java.sql.ResultSet;
@@ -26,6 +26,18 @@ public class PostgresUserDAO implements UserDAO {
 
         rs.close();
         return result;
+    }
+
+    public User getUserByUsername(String username) throws SQLException {
+        List<User> result = new ArrayList<>();
+        ResultSet rs = connection.executeWithValues("select username,password,full_name from users where username=?", new String[] {username});
+
+        if (rs.next()) {
+            return new User(rs.getString(1), rs.getString(2), rs.getString(3));
+
+        }
+
+        return null;
     }
 }
 

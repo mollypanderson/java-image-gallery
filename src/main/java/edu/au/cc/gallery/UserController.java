@@ -1,5 +1,9 @@
 package edu.au.cc.gallery;
 
+import edu.au.cc.gallery.data.DB;
+import edu.au.cc.gallery.data.Postgres;
+import edu.au.cc.gallery.data.User;
+import edu.au.cc.gallery.data.UserDAO;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -26,6 +30,15 @@ public class UserController {
             return "Error: " + e.getMessage();
         }
 
+    }
+
+    private static String getUser(String username) {
+        try {
+            UserDAO dao = Postgres.getUserDAO();
+            return dao.getUserByUsername(username).toString();
+        } catch (Exception ex) {
+            return "Error: " + ex.getMessage();
+        }
     }
 
     public String userAdminPage(Request req, Response res) throws Exception {
