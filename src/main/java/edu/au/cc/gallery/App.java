@@ -19,7 +19,7 @@ public class App {
 		port(Integer.parseInt(portString));
 	}
 
-        new User().addRoutes();
+        new UserController().addRoutes();
     }
 }
  

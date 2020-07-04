@@ -13,22 +13,23 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class DB {
-   
-    private static final String dbUrl = buildDbUrl();
-    private static final String dbUser = System.getenv("IG_USER");
-    private static final String dbPassword = System.getenv("IG_PASSWD");
+
+    private static final String dbUrl = "jdbc:postgresql://image-gallery.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
+    private static final String dbUser = "image_gallery";
+    private static final String dbPassword = "Jas33per";
     private Connection connection;
 
     public static String buildDbUrl() {
         StringBuilder sb = new StringBuilder("jdbc:postgresql://");
-	sb.append(System.getenv("PG_HOST"));
-	sb.append("/");
-	sb.append(System.getenv("IG_DATABASE"));
-	String result = sb.toString();
-	return result;
+        sb.append(System.getenv("PG_HOST"));
+        sb.append("/");
+        sb.append(System.getenv("IG_DATABASE"));
+        String result = sb.toString();
+        return result;
     }
 
     public static ArrayList listUsers() throws Exception {
@@ -115,7 +116,7 @@ public class DB {
         db.connect();
 
         ResultSet rs = db.executeWithValues("select username,password,full_name from users where username = ?",
-                new String[] {username});
+                new String[]{username});
 
         if (!rs.next()) {
             rs.close();
@@ -143,12 +144,27 @@ public class DB {
         db.close();
     }
 
+    public static void demo() throws Exception {
+        DB db = new DB();
+        db.connect();
+        db.execute("update users set password=? where username=?",
+                new String[]{"monkey", "fred"});
+        ResultSet rs = db.execute("select username,password,full_name from users");
+        while (rs.next()) {
+            System.out.println("user: " + rs.getString(1) + ","
+                    + rs.getString(2) + ","
+                    + rs.getString(3));
+        }
+        rs.close();
+        db.close();
+    }
+
     private String getPassword() {
-	return dbPassword;
+        return dbPassword;
     }
 
     public void connect() throws FileNotFoundException, SQLException {
-            connection = DriverManager.getConnection(dbUrl, dbUser, getPassword());
+        connection = DriverManager.getConnection(dbUrl, dbUser, getPassword());
     }
 
     public ResultSet execute(String query) throws SQLException {
@@ -174,26 +190,12 @@ public class DB {
         stmt.execute();
     }
 
-    public static void demo() throws Exception {
-        DB db = new DB();
-        db.connect();
-        db.execute("update users set password=? where username=?",
-                new String[] {"monkey", "fred"});
-        ResultSet rs = db.execute("select username,password,full_name from users");
-        while(rs.next()) {
-            System.out.println("user: "+rs.getString(1)+","
-                    +rs.getString(2)+","
-                    +rs.getString(3));
-        }
-        rs.close();
-        db.close();
-    }
-
     public void close() throws SQLException {
         connection.close();
     }
 
 }
+
 
 
 

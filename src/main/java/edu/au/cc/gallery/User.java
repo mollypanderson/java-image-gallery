@@ -1,90 +1,46 @@
 package edu.au.cc.gallery;
 
-import spark.ModelAndView;
-import spark.Request;
-import spark.Response;
-import spark.template.handlebars.HandlebarsTemplateEngine;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-
-import static spark.Spark.*;
-
 public class User {
+    private String username;
+    private String password;
+    private String fullName;
 
-    public String userAdminPage(Request req, Response res) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        ArrayList<String> usersList = getAllUsers();
-
-        ArrayList<String> userFullNamesList = getAllUserFullNames();
-
-        model.put("users", usersList);
-        model.put("userFullNames", userFullNamesList);
-
-
-        return new HandlebarsTemplateEngine()
-                .render(new ModelAndView(model, "admin.hbs"));
+    public User(String username, String password, String fullName) {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
     }
 
-    public String addUserPage(Request req, Response res) {
-        Map<String, Object> model = new HashMap<String, Object>();
-        return new HandlebarsTemplateEngine()
-                .render(new ModelAndView(model, "addUser.hbs"));
+    public String getUsername() {
+
+        return username;
     }
 
-    public String modifyUserPage(Request req, Response res) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("user", req.params(":user"));
-        return new HandlebarsTemplateEngine()
-                .render(new ModelAndView(model, "modifyUser.hbs"));
+    public void setUsername(String u) {
+        username = u;
     }
 
+    public String getpassword() {
 
-    public String deleteUserPage(Request req, Response res) throws Exception {
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("user", req.params(":user"));
-        return new HandlebarsTemplateEngine()
-                .render(new ModelAndView(model, "deleteUser.hbs"));
+        return password;
     }
 
-    public ArrayList<String> getAllUsers() throws Exception {
-
-        ArrayList<String> users = DB.listUsers();
-        return users;
+    public void setpassword(String p) {
+        password = p;
     }
 
-    public ArrayList<String> getAllUserFullNames() throws Exception {
-        return DB.getUserFullNames();
+    public String getFullName() {
 
+        return fullName;
     }
 
-    public String addUser(Request req, Response res) throws Exception {
-        DB.addUser(req.queryParams("userId"), req.queryParams("password"), req.queryParams("fullName"));
-        return "Added user " + req.queryParams("userId") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+    public void setFullName(String fn) {
+        fullName = fn;
     }
 
-    public String modifyUser(Request req, Response res) throws Exception {
-        DB.updateUser(req.params(":user"), req.queryParams("password"), req.queryParams("fullName"));
-        return "Modified user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
+    @Override
+    public String toString() {
+        return "User with Username: " + username + "  password: " + password + "  full name: " + fullName;
     }
-
-    public String deleteUser(Request req, Response res) throws Exception {
-        DB.deleteUser(req.params(":user"));
-        return "Deleted user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
-    }
-
-    public void addRoutes() {
-        get("/admin", (req, res) -> userAdminPage(req, res));
-        get("/admin/addUser", (req, res) -> addUserPage(req, res));
-        get("/admin/modifyUser/:user", (req, res) -> modifyUserPage(req, res));
-        get("/admin/deleteUser/:user", (req, res) -> deleteUserPage(req, res));
-        post("/admin/addUser/add", (req, res) -> addUser(req, res));
-        post("/admin/modifyUser/:user/modify", (req, res) -> modifyUser(req, res));
-        post("/admin/deleteUser/:user/delete", (req, res) -> deleteUser(req, res));
-    }
-
-
 }
-
 
