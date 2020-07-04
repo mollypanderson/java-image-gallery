@@ -13,33 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 
+import static edu.au.cc.gallery.data.Postgres.getUserDAO;
 import static spark.Spark.*;
 
 public class UserController {
 
-    private static String listUsers() {
 
-        try {
-            StringBuffer sb = new StringBuffer();
-            UserDAO dao = Postgres.getUserDAO();
-            for (User u : dao.getUsers()) {
-                sb.append(u.toString());
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-
-    }
-
-    private static String getUser(String username) {
-        try {
-            UserDAO dao = Postgres.getUserDAO();
-            return dao.getUserByUsername(username).toString();
-        } catch (Exception ex) {
-            return "Error: " + ex.getMessage();
-        }
-    }
 
     public String userAdminPage(Request req, Response res) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
@@ -101,6 +80,28 @@ public class UserController {
         return "Deleted user " + req.params(":user") + "<!DOCTYPE html><html><head></head><body></br><a href=\"/admin\"><button>Return home</button></a><body></html>";
     }
 
+    private String login(Request req, Response resp) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        return new HandlebarsTemplateEngine()
+                .render(new ModelAndView(model, "login.hbs"));
+    }
+
+    private String loginPost(Request req, Response resp) {
+        try {
+            String username = req.queryParams("username");
+            User u = getUserDAO().getUserByUsername(username);
+            if (u == null || u.getPassword().equals(req.queryMap().get("password"))) {
+                resp.redirect("/login");
+            }
+            req.session().attribute("user", username);
+            resp.redirect("/admin");
+            return "";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+
+    }
+
     public void addRoutes() {
         get("/admin", (req, res) -> userAdminPage(req, res));
         get("/admin/addUser", (req, res) -> addUserPage(req, res));
@@ -109,6 +110,8 @@ public class UserController {
         post("/admin/addUser/add", (req, res) -> addUser(req, res));
         post("/admin/modifyUser/:user/modify", (req, res) -> modifyUser(req, res));
         post("/admin/deleteUser/:user/delete", (req, res) -> deleteUser(req, res));
+        get("/login", (req, res) -> login(req, res));
+        post("/login", (req, res) -> loginPost(req, res));
     }
 
 

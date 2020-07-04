@@ -39,5 +39,33 @@ public class PostgresUserDAO implements UserDAO {
 
         return null;
     }
+
+    public void addUser(User u) throws SQLException {
+        connection.execute("insert into users(username,password,full_name) values (?,?,?)",
+                new String[] {u.getUsername(), u.getPassword(), u.getFullName()});
+    }
+
+    public void updateUser(User u) throws SQLException {
+        try {
+            if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+
+                connection.execute("update users set password=? where username=?",
+                        new String[]{u.getPassword(), u.getUsername()});
+            }
+            if (u.getFullName() != null && !u.getFullName().isEmpty()) {
+                connection.execute("update users set full_name=? where username=?",
+                        new String[]{u.getFullName(), u.getUsername()});
+            }
+
+        } catch (Exception e) {
+            System.out.println("Something went wrong. ");
+        }
+    }
+
+    public void deleteUser(String username) throws SQLException {
+        connection.execute("DELETE FROM users WHERE username = ?",
+                new String[]{username});
+    }
+
 }
 

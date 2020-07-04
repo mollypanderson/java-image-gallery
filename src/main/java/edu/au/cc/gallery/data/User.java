@@ -20,12 +20,12 @@ public class User {
         username = u;
     }
 
-    public String getpassword() {
+    public String getPassword() {
 
         return password;
     }
 
-    public void setpassword(String p) {
+    public void setPassword(String p) {
         password = p;
     }
 
