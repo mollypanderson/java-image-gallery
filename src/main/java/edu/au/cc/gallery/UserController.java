@@ -10,6 +10,7 @@ import spark.Response;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
@@ -18,17 +19,13 @@ import static spark.Spark.*;
 
 public class UserController {
 
-
+    private boolean authenticated = false;
 
     public String userAdminPage(Request req, Response res) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        ArrayList<String> usersList = getAllUsers();
+        //List<User> usersList = getAllUsers();
 
-        ArrayList<String> userFullNamesList = getAllUserFullNames();
-
-        model.put("users", usersList);
-        model.put("userFullNames", userFullNamesList);
-
+        model.put("users", getUserDAO().getUsers());
 
         return new HandlebarsTemplateEngine()
                 .render(new ModelAndView(model, "admin.hbs"));
@@ -54,10 +51,14 @@ public class UserController {
                 .render(new ModelAndView(model, "deleteUser.hbs"));
     }
 
-    public ArrayList<String> getAllUsers() throws Exception {
+    public List<User> getAllUsers() {
 
-        ArrayList<String> users = DB.listUsers();
-        return users;
+        try {
+            UserDAO dao = Postgres.getUserDAO();
+            return dao.getUsers();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public ArrayList<String> getAllUserFullNames() throws Exception {
@@ -81,6 +82,7 @@ public class UserController {
     }
 
     private String login(Request req, Response resp) {
+        authenticated = false;
         Map<String, Object> model = new HashMap<String, Object>();
         return new HandlebarsTemplateEngine()
                 .render(new ModelAndView(model, "login.hbs"));
@@ -94,6 +96,7 @@ public class UserController {
                 return "Invalid user or password";
             }
             req.session().attribute("user", username);
+            authenticated = true;
             resp.redirect("/");
         } catch (Exception e) {
             return "Error: " + e.getMessage();
@@ -113,10 +116,30 @@ public class UserController {
         }
     }
 
+    private void checkAuthentication(Request req, Response resp) {
+        
+        if (!authenticated) {
+            resp.redirect("/login");
+            halt(401, "You must be logged in to view this page");
+        }
+    }
+
     private String home(Request req, Response resp) {
         Map<String, Object> model = new HashMap<String, Object>();
         return new HandlebarsTemplateEngine()
                 .render(new ModelAndView(model, "home.hbs"));
+    }
+
+    private String uploadImage(Request req, Response resp) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        return new HandlebarsTemplateEngine()
+                .render(new ModelAndView(model, "uploadImage.hbs"));
+    }
+
+    private String viewImages(Request req, Response resp) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        return new HandlebarsTemplateEngine()
+                .render(new ModelAndView(model, "viewImages.hbs"));
     }
 
     public void addRoutes() {
@@ -130,7 +153,10 @@ public class UserController {
         get("/login", (req, res) -> login(req, res));
         post("/login", (req, res) -> loginPost(req, res));
         get("/", (req, res) -> home(req, res));
+        before("/", (req, res) -> checkAuthentication(req, res));
         before("/admin/*", (req, res) -> checkAdmin(req, res));
+        get("/uploadImage", (req, res) -> uploadImage(req, res));
+        get("/viewImages", (req, res) -> viewImages(req, res));
     }
 
 

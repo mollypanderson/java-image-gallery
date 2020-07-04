@@ -5,17 +5,21 @@
     <meta charset="utf-8"/>
 </head>
 <body style="font-size:20px; font-family:Consolas">
-<h2>Welcome to the user administration page</h2>
+<h2>User administration</h2>
 <h3>Users</h3>
 <ul class="users-list">
-    {{#each users}}
+    {{# users }}
     <li>
-        <a href="/admin/modifyUser/{{this}}">{{this}}</a>
-        <a href="/admin/deleteUser/{{this}}"><button>Delete</button></a>
+        <a href="/admin/modifyUser/{{ username }}">{{ fullName }} | {{ username }}</a>
+        <a href="/admin/deleteUser/{{ username }}"><button>Delete</button></a>
     </li>
-    {{/each}}
+    {{/ users }}
+    {{^ users }}
+    No users
+    {{/ users }}
 </ul>
     <ul><a href="/admin/addUser"><button>+ create a new user</button></a></ul></br>
 </body>
 </html>
+
 
