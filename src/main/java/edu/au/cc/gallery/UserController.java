@@ -90,15 +90,15 @@ public class UserController {
         try {
             String username = req.queryParams("username");
             User u = getUserDAO().getUserByUsername(username);
-            if (u == null || u.getPassword().equals(req.queryMap().get("password"))) {
-                resp.redirect("/login");
+            if (u == null || !u.getPassword().equals(req.queryParams("password"))) {
+                return "Invalid user or password";
             }
             req.session().attribute("user", username);
             resp.redirect("/admin");
-            return "";
         } catch (Exception e) {
             return "Error: " + e.getMessage();
         }
+        return "";
 
     }
 
