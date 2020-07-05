@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 public class DB {
 
-    private static final String dbUrl = "jdbc:postgresql://image-gallery.cfunveg3cqlp.us-west-2.rds.amazonaws.com/image_gallery";
-    private static final String dbUser = "image_gallery";
-    private static final String dbPassword = "Jas33per";
+    private static final String dbUrl = buildDbUrl();
+    private static final String dbUser = System.getenv("IG_USER");
+    private static final String dbPassword = System.getenv("IG_PASSWD");
     private Connection connection;
 
     public static String buildDbUrl() {
