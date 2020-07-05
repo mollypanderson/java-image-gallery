@@ -116,7 +116,7 @@ public class UserController {
     }
 
     private boolean isAdmin(String username) {
-        return username != null && username.equals("administrator");
+        return username != null && (username.equals("dongji") || username.equals("admin"));
     }
 
     private void checkAdmin(Request req, Response resp) {
@@ -174,6 +174,7 @@ public class UserController {
 
 
 }
+
 
 
 
