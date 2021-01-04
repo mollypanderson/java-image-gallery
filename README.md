@@ -1,3 +1,3 @@
 # Java-based image gallery
 
-Cool stuff
+Image gallery application I made for my cloud computing course. 
